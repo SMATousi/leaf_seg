@@ -8,8 +8,11 @@ from sklearn.model_selection import train_test_split
 import random
 import numpy as np
 from tqdm import tqdm
+import argparse
+import wandb
 from dataloader import *
 from model import *
+from Uformer_model import *
 
 random.seed(0)
 np.random.seed(0)
@@ -18,19 +21,55 @@ torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = False
 
 
+parser = argparse.ArgumentParser(description="A script with argparse options")
+
+# Add an argument for an integer option
+parser.add_argument("--runname", type=str, required=True)
+parser.add_argument("--projectname", type=str, required=True)
+parser.add_argument("--modelname", type=str, required=True)
+parser.add_argument("--batchsize", type=int, default=4)
+parser.add_argument("--savingstep", type=int, default=10)
+parser.add_argument("--epochs", type=int, default=100)
+parser.add_argument("--nottest", help="Enable verbose mode", action="store_true")
+
+args = parser.parse_args()
+
+arg_batch_size = args.batchsize
+arg_epochs = args.epochs
+arg_runname = args.runname
+arg_projectname = args.projectname
+arg_modelname = args.modelname
+arg_savingstep = args.savingstep
+
+args = parser.parse_args()
+
+wandb.init(
+        # set the wandb project where this run will be logged
+    project=arg_projectname, name=arg_runname
+        
+        # track hyperparameters and run metadata
+        # config={
+        # "learning_rate": 0.02,
+        # "architecture": "CNN",
+        # "dataset": "CIFAR-100",
+        # "epochs": 20,
+        # }
+)
+
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 print(device)
 
 
-batch_size = 4
+batch_size = arg_batch_size
 learning_rate = 0.0001
-epochs = 100
+epochs = arg_epochs
 number_of_workers = 1
+image_size = 256
 
 
 transform = transforms.Compose([
-    transforms.Resize((256, 256)),
+    transforms.Resize((image_size, image_size)),
     transforms.RandomHorizontalFlip(),
     transforms.RandomVerticalFlip(),
 #     transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.1),
@@ -69,8 +108,15 @@ test_loader = DataLoader(test_dataset, batch_size=batch_size, num_workers=number
 print("Data is loaded")
 
 
-
-model = BothNet(in_channels=3, out_channels=1).to(device)  # Replace with your custom model definition
+# Instantiate the model
+if arg_modelname == 'Unet_1':
+    model = UNet_1(n_channels=3, n_classes=1, dropout_rate=0.5).to(device)  # Change n_classes based on your output
+if arg_modelname == 'Uformer':
+    model = Uformer(img_size=image_size,embed_dim=32,win_size=8,in_chans=1,dd_in=3,token_projection='linear',token_mlp='leff',modulator=False).to(device)
+if arg_modelname == 'DepthNet':
+    model = DepthNet().to(device)
+if arg_modelname == 'Bothnet':
+    model = BothNet(in_channels=3, out_channels=1).to(device)  # Replace with your custom model definition
 
 
 criterion = nn.BCEWithLogitsLoss()  # Replace with your loss function
