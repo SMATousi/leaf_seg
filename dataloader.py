@@ -35,7 +35,7 @@ class leaf_segmentation_dataset(Dataset):
             label = self.transform(label)
         
         label = np.array(label)
-        label = (label > self.threshold).astype(np.float32)
+        label = (label < self.threshold).astype(np.float32)
         
 
         return image, label

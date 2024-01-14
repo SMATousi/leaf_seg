@@ -94,13 +94,13 @@ image_folder = "../images_448/"
 label_folder = "../labels_448/"
 
 
-full_dataset = leaf_segmentation_dataset(image_folder, label_folder, transform, threshold=0)
+full_dataset = leaf_segmentation_dataset(image_folder, label_folder, transform, threshold=1)
 
 
 # Calculate the size of the train, validation, and test sets
-train_ratio = 0.9  # 80% for training
-val_ratio = 0.05    # 10% for validation
-test_ratio = 0.05  # 10% for testing
+train_ratio = 0.8  # 80% for training
+val_ratio = 0.1    # 5% for validation
+test_ratio = 0.1  # 15% for testing
 
 train_size = int(train_ratio * len(full_dataset))
 val_size = int(val_ratio * len(full_dataset))
