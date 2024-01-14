@@ -139,14 +139,6 @@ optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 # Training loop
 for epoch in range(epochs):
 
-    train_mean_acc = []
-    train_mean_iou = []
-    train_mean_dic = []
-
-    valid_mean_acc = []
-    valid_mean_iou = []
-    valid_mean_dic = []
-
     train_metrics = {'train/accuracy': 0, 'train/iou': 0, 'train/dice': 0}
 
     model.train()  # Set the model to training mode
