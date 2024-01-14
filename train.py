@@ -13,6 +13,7 @@ import wandb
 from dataloader import *
 from model import *
 from Uformer_model import *
+from utils import *
 
 random.seed(0)
 np.random.seed(0)
@@ -31,6 +32,7 @@ parser.add_argument("--batchsize", type=int, default=4)
 parser.add_argument("--savingstep", type=int, default=10)
 parser.add_argument("--epochs", type=int, default=100)
 parser.add_argument("--nottest", help="Enable verbose mode", action="store_true")
+parser.add_argument("--logging", help="Enable verbose mode", action="store_true")
 
 args = parser.parse_args()
 
@@ -41,20 +43,28 @@ arg_projectname = args.projectname
 arg_modelname = args.modelname
 arg_savingstep = args.savingstep
 
+if args.nottest:
+    arg_nottest = True 
+else:
+    arg_nottest = False
+
+
 args = parser.parse_args()
 
-wandb.init(
-        # set the wandb project where this run will be logged
-    project=arg_projectname, name=arg_runname
-        
-        # track hyperparameters and run metadata
-        # config={
-        # "learning_rate": 0.02,
-        # "architecture": "CNN",
-        # "dataset": "CIFAR-100",
-        # "epochs": 20,
-        # }
-)
+if args.logging:
+    
+    wandb.init(
+            # set the wandb project where this run will be logged
+        project=arg_projectname, name=arg_runname
+            
+            # track hyperparameters and run metadata
+            # config={
+            # "learning_rate": 0.02,
+            # "architecture": "CNN",
+            # "dataset": "CIFAR-100",
+            # "epochs": 20,
+            # }
+    )
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -126,6 +136,17 @@ optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 
 # Training loop
 for epoch in range(epochs):
+
+    train_mean_acc = []
+    train_mean_iou = []
+    train_mean_dic = []
+
+    valid_mean_acc = []
+    valid_mean_iou = []
+    valid_mean_dic = []
+
+    train_metrics = {'accuracy': 0, 'iou': 0, 'dice': 0}
+
     model.train()  # Set the model to training mode
     for images, labels in tqdm(train_loader):
         images, labels = images.to(device), labels.to(device)  # Move data to GPU
@@ -135,23 +156,49 @@ for epoch in range(epochs):
         loss.backward()  # Backpropagation
         optimizer.step()  # Update weights
 
-    # Print training loss or other metrics as needed
+        acc, iou, dice = calculate_metrics(outputs, labels)
+        train_metrics['accuracy'] += acc
+        train_metrics['iou'] += iou
+        train_metrics['dice'] += dice
+
+        if arg_nottest:
+            continue
+        else:
+            break
+
+    if arg_nottest:
+        for k in train_metrics:
+            train_metrics[k] /= len(train_loader)
+    
     print(f"Epoch [{epoch+1}/{epochs}] - Loss: {loss.item()}")
+    print(train_metrics)
+
+    
 
     # Validation loop
     model.eval()  # Set the model to evaluation mode
+    val_metrics = {'accuracy': 0, 'iou': 0, 'dice': 0}
     with torch.no_grad():
         val_correct = 0
         val_total = 0
         for images, labels in tqdm(val_loader):
             images, labels = images.to(device), labels.to(device)  # Move data to GPU
             val_outputs = model(images)  # Forward pass
-            _, val_predicted = torch.max(val_outputs.data, 1)
-            val_total += labels.size(0)
-            val_correct += (val_predicted == labels).sum().item()
+            acc, iou, dice = calculate_metrics(val_outputs, labels)
+            val_metrics['accuracy'] += acc
+            val_metrics['iou'] += iou
+            val_metrics['dice'] += dice
 
-        val_accuracy = 100 * val_correct / val_total
-        print(f"Validation Accuracy: {val_accuracy}%")
+            if arg_nottest:
+                continue
+            else:
+                break
+        
+        if arg_nottest:
+            for k in val_metrics:
+                val_metrics[k] /= len(val_loader)
+
+        print(val_metrics)
 
 # Testing loop
 model.eval()  # Set the model to evaluation mode
