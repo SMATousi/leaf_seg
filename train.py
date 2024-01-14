@@ -52,7 +52,7 @@ else:
 args = parser.parse_args()
 
 if args.logging:
-    
+
     wandb.init(
             # set the wandb project where this run will be logged
         project=arg_projectname, name=arg_runname
@@ -98,9 +98,9 @@ full_dataset = leaf_segmentation_dataset(image_folder, label_folder, transform, 
 
 
 # Calculate the size of the train, validation, and test sets
-train_ratio = 0.8  # 80% for training
-val_ratio = 0.1    # 10% for validation
-test_ratio = 0.1   # 10% for testing
+train_ratio = 0.9  # 80% for training
+val_ratio = 0.05    # 10% for validation
+test_ratio = 0.05  # 10% for testing
 
 train_size = int(train_ratio * len(full_dataset))
 val_size = int(val_ratio * len(full_dataset))
@@ -202,15 +202,17 @@ for epoch in range(epochs):
 
 # Testing loop
 model.eval()  # Set the model to evaluation mode
+test_metrics = {'accuracy': 0, 'iou': 0, 'dice': 0}
 with torch.no_grad():
     test_correct = 0
     test_total = 0
     for images, labels in tqdm(test_loader):
         images, labels = images.to(device), labels.to(device)  # Move data to GPU
         test_outputs = model(images)  # Forward pass
-        _, test_predicted = torch.max(test_outputs.data, 1)
-        test_total += labels.size(0)
-        test_correct += (test_predicted == labels).sum().item()
+        acc, iou, dice = calculate_metrics(test_outputs, labels)
+        test_metrics['accuracy'] += acc
+        test_metrics['iou'] += iou
+        test_metrics['dice'] += dice
 
-    test_accuracy = 100 * test_correct / test_total
-    print(f"Test Accuracy: {test_accuracy}%")
+    
+    print(f"Test Results: {test_metrics}%")
