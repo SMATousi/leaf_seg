@@ -31,6 +31,7 @@ parser.add_argument("--modelname", type=str, required=True)
 parser.add_argument("--batchsize", type=int, default=4)
 parser.add_argument("--savingstep", type=int, default=10)
 parser.add_argument("--epochs", type=int, default=100)
+parser.add_argument("--threshold", type=int, default=1)
 parser.add_argument("--nottest", help="Enable verbose mode", action="store_true")
 parser.add_argument("--logging", help="Enable verbose mode", action="store_true")
 
@@ -42,6 +43,7 @@ arg_runname = args.runname
 arg_projectname = args.projectname
 arg_modelname = args.modelname
 arg_savingstep = args.savingstep
+arg_threshold = args.threshold
 
 if args.nottest:
     arg_nottest = True 
@@ -94,7 +96,7 @@ image_folder = "../images_448/"
 label_folder = "../labels_448/"
 
 
-full_dataset = leaf_segmentation_dataset(image_folder, label_folder, transform, threshold=1)
+full_dataset = leaf_segmentation_dataset(image_folder, label_folder, transform, threshold=arg_threshold)
 
 
 # Calculate the size of the train, validation, and test sets
@@ -145,7 +147,7 @@ for epoch in range(epochs):
     valid_mean_iou = []
     valid_mean_dic = []
 
-    train_metrics = {'accuracy': 0, 'iou': 0, 'dice': 0}
+    train_metrics = {'train/accuracy': 0, 'train/iou': 0, 'train/dice': 0}
 
     model.train()  # Set the model to training mode
     for images, labels in tqdm(train_loader):
@@ -157,9 +159,9 @@ for epoch in range(epochs):
         optimizer.step()  # Update weights
 
         acc, iou, dice = calculate_metrics(outputs, labels)
-        train_metrics['accuracy'] += acc
-        train_metrics['iou'] += iou
-        train_metrics['dice'] += dice
+        train_metrics['train/accuracy'] += acc
+        train_metrics['train/iou'] += iou
+        train_metrics['train/dice'] += dice
 
         if arg_nottest:
             continue
@@ -170,6 +172,9 @@ for epoch in range(epochs):
         for k in train_metrics:
             train_metrics[k] /= len(train_loader)
     
+    if args.logging:
+        wandb.log(train_metrics)
+    
     print(f"Epoch [{epoch+1}/{epochs}] - Loss: {loss.item()}")
     print(train_metrics)
 
@@ -177,7 +182,7 @@ for epoch in range(epochs):
 
     # Validation loop
     model.eval()  # Set the model to evaluation mode
-    val_metrics = {'accuracy': 0, 'iou': 0, 'dice': 0}
+    val_metrics = {'Validation/accuracy': 0, 'Validation/iou': 0, 'Validation/dice': 0}
     with torch.no_grad():
         val_correct = 0
         val_total = 0
@@ -185,9 +190,9 @@ for epoch in range(epochs):
             images, labels = images.to(device), labels.to(device)  # Move data to GPU
             val_outputs = model(images)  # Forward pass
             acc, iou, dice = calculate_metrics(val_outputs, labels)
-            val_metrics['accuracy'] += acc
-            val_metrics['iou'] += iou
-            val_metrics['dice'] += dice
+            val_metrics['Validation/accuracy'] += acc
+            val_metrics['Validation/iou'] += iou
+            val_metrics['Validation/dice'] += dice
 
             if arg_nottest:
                 continue
@@ -198,11 +203,14 @@ for epoch in range(epochs):
             for k in val_metrics:
                 val_metrics[k] /= len(val_loader)
 
+        if args.logging:
+            wandb.log(val_metrics)
+
         print(val_metrics)
 
 # Testing loop
 model.eval()  # Set the model to evaluation mode
-test_metrics = {'accuracy': 0, 'iou': 0, 'dice': 0}
+test_metrics = {'Test/accuracy': 0, 'Test/iou': 0, 'Test/dice': 0}
 with torch.no_grad():
     test_correct = 0
     test_total = 0
@@ -215,4 +223,6 @@ with torch.no_grad():
         test_metrics['dice'] += dice
 
     
+    if args.logging:
+        wandb.log(test_metrics)
     print(f"Test Results: {test_metrics}%")
