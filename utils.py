@@ -2,8 +2,8 @@ import numpy as np
 
 def calculate_metrics(predicted, desired):
 
-    predicted = predicted.cpu().numpy()
-    desired = desired.cpu().numpy()
+    predicted = predicted.cpu().detach().numpy()
+    desired = desired.cpu().detach().numpy()
     
     predicted = np.where(predicted > 0.5, 1, 0)
     desired = np.where(desired > 0.5, 1, 0)
