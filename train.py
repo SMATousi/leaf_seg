@@ -139,7 +139,7 @@ optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 # Training loop
 for epoch in range(epochs):
 
-    train_metrics = {'train/accuracy': 0, 'train/iou': 0, 'train/dice': 0}
+    train_metrics = {'Train/accuracy': 0, 'Train/iou': 0, 'Train/dice': 0}
 
     model.train()  # Set the model to training mode
     for images, labels in tqdm(train_loader):
@@ -151,9 +151,9 @@ for epoch in range(epochs):
         optimizer.step()  # Update weights
 
         acc, iou, dice = calculate_metrics(outputs, labels)
-        train_metrics['train/accuracy'] += acc
-        train_metrics['train/iou'] += iou
-        train_metrics['train/dice'] += dice
+        train_metrics['Train/accuracy'] += acc
+        train_metrics['Train/iou'] += iou
+        train_metrics['Train/dice'] += dice
 
         if arg_nottest:
             continue
