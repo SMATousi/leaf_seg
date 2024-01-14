@@ -218,9 +218,9 @@ with torch.no_grad():
         images, labels = images.to(device), labels.to(device)  # Move data to GPU
         test_outputs = model(images)  # Forward pass
         acc, iou, dice = calculate_metrics(test_outputs, labels)
-        test_metrics['accuracy'] += acc
-        test_metrics['iou'] += iou
-        test_metrics['dice'] += dice
+        test_metrics['Test/accuracy'] += acc
+        test_metrics['Test/iou'] += iou
+        test_metrics['Test/dice'] += dice
 
     
     if args.logging:
