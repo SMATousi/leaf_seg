@@ -31,7 +31,7 @@ parser.add_argument("--modelname", type=str, required=True)
 parser.add_argument("--batchsize", type=int, default=4)
 parser.add_argument("--savingstep", type=int, default=10)
 parser.add_argument("--epochs", type=int, default=100)
-parser.add_argument("--threshold", type=int, default=1)
+parser.add_argument("--threshold", type=float, default=1)
 parser.add_argument("--nottest", help="Enable verbose mode", action="store_true")
 parser.add_argument("--logging", help="Enable verbose mode", action="store_true")
 
