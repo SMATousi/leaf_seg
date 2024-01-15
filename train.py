@@ -31,6 +31,7 @@ parser.add_argument("--modelname", type=str, required=True)
 parser.add_argument("--batchsize", type=int, default=4)
 parser.add_argument("--savingstep", type=int, default=100)
 parser.add_argument("--epochs", type=int, default=100)
+parser.add_argument("--imagesize", type=int, default=256)
 parser.add_argument("--threshold", type=float, default=1)
 parser.add_argument("--nottest", help="Enable verbose mode", action="store_true")
 parser.add_argument("--logging", help="Enable verbose mode", action="store_true")
@@ -44,6 +45,7 @@ arg_projectname = args.projectname
 arg_modelname = args.modelname
 arg_savingstep = args.savingstep
 arg_threshold = args.threshold
+arg_imagesize = args.imagesize
 
 if args.nottest:
     arg_nottest = True 
@@ -77,7 +79,7 @@ batch_size = arg_batch_size
 learning_rate = 0.0001
 epochs = arg_epochs
 number_of_workers = 1
-image_size = 256
+image_size = arg_imagesize
 
 
 transform = transforms.Compose([
