@@ -29,7 +29,7 @@ parser.add_argument("--runname", type=str, required=True)
 parser.add_argument("--projectname", type=str, required=True)
 parser.add_argument("--modelname", type=str, required=True)
 parser.add_argument("--batchsize", type=int, default=4)
-parser.add_argument("--savingstep", type=int, default=10)
+parser.add_argument("--savingstep", type=int, default=100)
 parser.add_argument("--epochs", type=int, default=100)
 parser.add_argument("--threshold", type=float, default=1)
 parser.add_argument("--nottest", help="Enable verbose mode", action="store_true")
@@ -167,6 +167,8 @@ for epoch in range(epochs):
     if args.logging:
         wandb.log(train_metrics)
     
+        
+    
     print(f"Epoch [{epoch+1}/{epochs}] - Loss: {loss.item()}")
     print(train_metrics)
 
@@ -197,6 +199,14 @@ for epoch in range(epochs):
 
         if args.logging:
             wandb.log(val_metrics)
+        
+        if (epoch + 1) % arg_savingstep == 0:
+
+            torch.save(model.state_dict(), f'./model_epoch_{epoch+1}.pth')
+            artifact = wandb.Artifact(f'model_epoch_{epoch+1}', type='model')
+            artifact.add_file(f'./model_epoch_{epoch+1}.pth')
+            wandb.log_artifact(artifact)
+            save_comparison_figures(model, val_loader, epoch + 1, device)
 
         print(val_metrics)
 
