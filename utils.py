@@ -37,6 +37,7 @@ def save_comparison_figures(model, dataloader, epoch, device, save_dir='comparis
 
     with torch.no_grad():
         for batch_idx, (inputs, targets) in enumerate(dataloader):
+            
             if sample_count >= num_samples:
                 break  # Break if we have already reached the desired number of samples
 
@@ -46,22 +47,26 @@ def save_comparison_figures(model, dataloader, epoch, device, save_dir='comparis
             probs = outputs.sigmoid()
             preds = probs > 0.5  # Apply threshold to get binary mask
 
+            for i in range(inputs.shape[0]):  # Loop over each image in the batch
+                if sample_count >= num_samples:
+                    break  # Break if we have already reached the desired number of samples
+
             # Access the i-th sample in the batch for both ground truth and prediction
-            input_image = inputs[sample_count].squeeze().cpu().numpy().transpose(1,2,0)
-            gt_mask = targets[sample_count].squeeze().cpu().numpy()  # Convert to NumPy array for plotting
-            pred_mask = preds[sample_count].squeeze().cpu().numpy()
+                input_image = inputs[i].squeeze().cpu().numpy().transpose(1,2,0)
+                gt_mask = targets[i].squeeze().cpu().numpy()  # Convert to NumPy array for plotting
+                pred_mask = preds[i].squeeze().cpu().numpy()
 
-            axs[sample_count, 0].imshow(input_image)
-            axs[sample_count, 0].set_title(f'Sample {sample_count + 1} Input')
-            axs[sample_count, 0].axis('off')
+                axs[sample_count, 0].imshow(input_image)
+                axs[sample_count, 0].set_title(f'Sample {sample_count + 1} Input')
+                axs[sample_count, 0].axis('off')
 
-            axs[sample_count, 1].imshow(gt_mask, cmap='gray')
-            axs[sample_count, 1].set_title(f'Sample {sample_count + 1} Ground Truth')
-            axs[sample_count, 1].axis('off')
+                axs[sample_count, 1].imshow(gt_mask, cmap='gray')
+                axs[sample_count, 1].set_title(f'Sample {sample_count + 1} Ground Truth')
+                axs[sample_count, 1].axis('off')
 
-            axs[sample_count, 2].imshow(pred_mask, cmap='gray')
-            axs[sample_count, 2].set_title(f'Sample {sample_count + 1} Prediction')
-            axs[sample_count, 2].axis('off')
+                axs[sample_count, 2].imshow(pred_mask, cmap='gray')
+                axs[sample_count, 2].set_title(f'Sample {sample_count + 1} Prediction')
+                axs[sample_count, 2].axis('off')
 
             
 
