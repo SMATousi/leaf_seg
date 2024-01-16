@@ -230,3 +230,83 @@ class DepthNet(nn.Module):
         x = self.decoder(x)
         
         return x
+
+
+class AttentionGate(nn.Module):
+    def __init__(self, F_g, F_l, F_int):
+        super(AttentionGate, self).__init__()
+        self.W_g = nn.Sequential(
+            nn.Conv2d(F_g, F_int, kernel_size=1, stride=1, padding=0, bias=True),
+            nn.BatchNorm2d(F_int)
+        )
+        self.W_x = nn.Sequential(
+            nn.Conv2d(F_l, F_int, kernel_size=1, stride=1, padding=0, bias=True),
+            nn.BatchNorm2d(F_int)
+        )
+        self.psi = nn.Sequential(
+            nn.Conv2d(F_int, 1, kernel_size=1, stride=1, padding=0, bias=True),
+            nn.BatchNorm2d(1),
+            nn.Sigmoid()
+        )
+        self.relu = nn.ReLU(inplace=True)
+        
+    def forward(self, g, x):
+        g1 = self.W_g(g)
+        x1 = self.W_x(x)
+        psi = self.relu(g1 + x1)
+        psi = self.psi(psi)
+        return x * psi
+
+
+
+class Att_Unet(nn.Module):
+    def __init__(self, n_channels, n_classes, dropout_rate=0.5):
+        super(Att_Unet, self).__init__()
+        self.n_channels = n_channels
+        self.n_classes = n_classes
+
+        self.inc = DoubleConv(n_channels, 64)
+        self.down1 = DoubleConv(64, 128)
+        self.down2 = DoubleConv(128, 256)
+        self.down3 = DoubleConv(256, 512)
+        self.down4 = DoubleConv(512, 512)
+        self.up1 = DoubleConv(1024, 256)
+        self.up2 = DoubleConv(512, 128)
+        self.up3 = DoubleConv(256, 64)
+        self.up4 = DoubleConv(128, 64)
+        self.outc = nn.Conv2d(64, n_classes, kernel_size=1)
+        self.sigmoid_activation = nn.Sigmoid()
+
+        self.dropout = nn.Dropout(dropout_rate)
+
+        self.attention1 = AttentionGate(F_g=512, F_l=512, F_int=256)
+        self.attention2 = AttentionGate(F_g=256, F_l=256, F_int=128)
+        self.attention3 = AttentionGate(F_g=128, F_l=128, F_int=64)
+        self.attention4 = AttentionGate(F_g=64, F_l=64, F_int=32)
+
+
+
+    def forward(self, x):
+        x1 = self.inc(x)
+        x2 = self.down1(x1)
+        x3 = self.down2(x2)
+        x4 = self.down3(x3)
+        x5 = self.down4(x4)
+
+        x4 = self.attention1(g=x5, x=x4)
+        x = self.up1(torch.cat([x4, x5], dim=1))
+        
+        x3 = self.attention2(g=x, x=x3)
+        x = self.up2(torch.cat([x3, x], dim=1))
+
+        x2 = self.attention3(g=x, x=x2)
+        x = self.up3(torch.cat([x2, x], dim=1))
+
+        x1 = self.attention4(g=x, x=x1)
+        x = self.up4(torch.cat([x1, x], dim=1))
+
+        logits = self.outc(x)
+        return logits
+
+
+        

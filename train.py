@@ -70,7 +70,7 @@ if args.logging:
             # }
     )
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda:3" if torch.cuda.is_available() else "cpu")
 
 print(device)
 
@@ -130,7 +130,9 @@ if arg_modelname == 'Uformer':
 if arg_modelname == 'DepthNet':
     model = DepthNet().to(device)
 if arg_modelname == 'Bothnet':
-    model = BothNet(in_channels=3, out_channels=1).to(device)  # Replace with your custom model definition
+    model = BothNet(in_channels=3, out_channels=1).to(device)  
+if arg_modelname == 'Att_Unet':
+    model = Att_Unet(n_channels=3, n_classes=1, dropout_rate=0.5).to(device)  
 
 
 criterion = nn.BCEWithLogitsLoss()  # Replace with your loss function
