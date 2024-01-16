@@ -1,0 +1,20 @@
+cuda:0
+Data is loaded
+Traceback (most recent call last):
+  File "train.py", line 136, in <module>
+    model = Att_Unet(n_channels=3, n_classes=1, dropout_rate=0.5).to(device)
+  File "/home/macula/SMATousi/.conda/envs/mac-deep/lib/python3.7/site-packages/torch/nn/modules/module.py", line 987, in to
+    return self._apply(convert)
+  File "/home/macula/SMATousi/.conda/envs/mac-deep/lib/python3.7/site-packages/torch/nn/modules/module.py", line 639, in _apply
+    module._apply(fn)
+  File "/home/macula/SMATousi/.conda/envs/mac-deep/lib/python3.7/site-packages/torch/nn/modules/module.py", line 639, in _apply
+    module._apply(fn)
+  File "/home/macula/SMATousi/.conda/envs/mac-deep/lib/python3.7/site-packages/torch/nn/modules/module.py", line 639, in _apply
+    module._apply(fn)
+  File "/home/macula/SMATousi/.conda/envs/mac-deep/lib/python3.7/site-packages/torch/nn/modules/module.py", line 662, in _apply
+    param_applied = fn(param)
+  File "/home/macula/SMATousi/.conda/envs/mac-deep/lib/python3.7/site-packages/torch/nn/modules/module.py", line 985, in convert
+    return t.to(device, dtype if t.is_floating_point() or t.is_complex() else None, non_blocking)
+RuntimeError: CUDA error: out of memory
+CUDA kernel errors might be asynchronously reported at some other API call,so the stacktrace below might be incorrect.
+For debugging consider passing CUDA_LAUNCH_BLOCKING=1.

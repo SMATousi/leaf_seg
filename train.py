@@ -14,6 +14,7 @@ from dataloader import *
 from model import *
 from Uformer_model import *
 from utils import *
+from SA_Unet_model import *
 
 random.seed(0)
 np.random.seed(0)
@@ -70,7 +71,7 @@ if args.logging:
             # }
     )
 
-device = torch.device("cuda:3" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 print(device)
 
@@ -132,7 +133,9 @@ if arg_modelname == 'DepthNet':
 if arg_modelname == 'Bothnet':
     model = BothNet(in_channels=3, out_channels=1).to(device)  
 if arg_modelname == 'Att_Unet':
-    model = Att_Unet(n_channels=3, n_classes=1, dropout_rate=0.5).to(device)  
+    model = Att_Unet(n_channels=3, n_classes=1, dropout_rate=0.5).to(device) 
+if arg_modelname == 'SA_Unet':
+    model = SA_UNet(in_channels=3, num_classes=1).to(device)  
 
 
 criterion = nn.BCEWithLogitsLoss()  # Replace with your loss function

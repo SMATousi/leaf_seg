@@ -1,0 +1,1 @@
+{"Train/accuracy": 0.9803959009393626, "Train/iou": 0.5403637462364272, "Train/dice": 0.6992916627841499, "_timestamp": 1705434681.8667665, "_runtime": 1241.1999723911285, "_step": 35, "Validation/accuracy": 0.9806122276853408, "Validation/iou": 0.5728718591438388, "Validation/dice": 0.7264875243651121}

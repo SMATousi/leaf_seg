@@ -1,0 +1,152 @@
+{
+    "os": "Linux-5.19.0-46-generic-x86_64-with-debian-bookworm-sid",
+    "python": "3.7.13",
+    "heartbeatAt": "2024-01-16T19:30:44.122041",
+    "startedAt": "2024-01-16T19:30:40.416510",
+    "docker": null,
+    "cuda": null,
+    "args": [
+        "--projectname",
+        "Leaf_segmentation_with_pics",
+        "--runname",
+        "SA_Unet_batch2_th09_ep1000",
+        "--modelname",
+        "SA_Unet",
+        "--batchsize",
+        "2",
+        "--epochs",
+        "1000",
+        "--threshold",
+        "0.9",
+        "--nottest",
+        "--logging"
+    ],
+    "state": "running",
+    "program": "train.py",
+    "codePath": "train.py",
+    "git": {
+        "remote": "git@github.com:SMATousi/leaf_seg.git",
+        "commit": "dea06a364380ddf8cd9e4f54de616f42cc2832b4"
+    },
+    "email": "mohamadali.tousi@gmail.com",
+    "root": "/home/macula/SMATousi/Gullies/ground_truth/leaf_vein_seg/leaf_seg",
+    "host": "choroid",
+    "username": "SMATousi",
+    "executable": "/home/macula/SMATousi/.conda/envs/mac-deep/bin/python3",
+    "cpu_count": 8,
+    "cpu_count_logical": 16,
+    "cpu_freq": {
+        "current": 1565.5468124999998,
+        "min": 1200.0,
+        "max": 4350.0
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 1199.982,
+            "min": 1200.0,
+            "max": 4300.0
+        },
+        {
+            "current": 1201.65,
+            "min": 1200.0,
+            "max": 4300.0
+        },
+        {
+            "current": 1200.016,
+            "min": 1200.0,
+            "max": 4300.0
+        },
+        {
+            "current": 1199.962,
+            "min": 1200.0,
+            "max": 4300.0
+        },
+        {
+            "current": 3999.994,
+            "min": 1200.0,
+            "max": 4500.0
+        },
+        {
+            "current": 1199.998,
+            "min": 1200.0,
+            "max": 4500.0
+        },
+        {
+            "current": 1218.537,
+            "min": 1200.0,
+            "max": 4300.0
+        },
+        {
+            "current": 1200.009,
+            "min": 1200.0,
+            "max": 4300.0
+        },
+        {
+            "current": 1199.837,
+            "min": 1200.0,
+            "max": 4300.0
+        },
+        {
+            "current": 1200.009,
+            "min": 1200.0,
+            "max": 4300.0
+        },
+        {
+            "current": 1199.574,
+            "min": 1200.0,
+            "max": 4300.0
+        },
+        {
+            "current": 1198.555,
+            "min": 1200.0,
+            "max": 4300.0
+        },
+        {
+            "current": 3999.991,
+            "min": 1200.0,
+            "max": 4500.0
+        },
+        {
+            "current": 1200.004,
+            "min": 1200.0,
+            "max": 4500.0
+        },
+        {
+            "current": 1560.835,
+            "min": 1200.0,
+            "max": 4300.0
+        },
+        {
+            "current": 1199.682,
+            "min": 1200.0,
+            "max": 4300.0
+        }
+    ],
+    "disk": {
+        "total": 378.9653778076172,
+        "used": 78.86035919189453
+    },
+    "gpu": "NVIDIA GeForce RTX 2080 Ti",
+    "gpu_count": 4,
+    "gpu_devices": [
+        {
+            "name": "NVIDIA GeForce RTX 2080 Ti",
+            "memory_total": 11811160064
+        },
+        {
+            "name": "NVIDIA GeForce RTX 2080 Ti",
+            "memory_total": 11811160064
+        },
+        {
+            "name": "NVIDIA GeForce RTX 2080 Ti",
+            "memory_total": 11811160064
+        },
+        {
+            "name": "NVIDIA GeForce RTX 2080 Ti",
+            "memory_total": 11811160064
+        }
+    ],
+    "memory": {
+        "total": 62.466583251953125
+    }
+}
